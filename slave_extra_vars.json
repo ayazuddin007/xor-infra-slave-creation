@@ -1,0 +1,13 @@
+{
+    "NODE_NAME" : "slave",
+    "NODE_SLAVE_HOME" : "/home/ec2-user/jenkins_slave",
+    "EXECUTORS" : 10,
+    "SSH_PORT" : 22,
+    "CRED_ID" : "slave_node_amazon_linux",
+    "LABELS" : "slave",
+    "USERID" : "ec2-user",
+    "JENKINS_URL" : "http://18.207.254.76:8080",
+    "JENKINS_SLAVE_PATH" : "/var/lib/jenkins/slave/",
+    "JENKINS_USERNAME" : "admin",
+    "JENKINS_PASSWORD" : "admin" 
+}

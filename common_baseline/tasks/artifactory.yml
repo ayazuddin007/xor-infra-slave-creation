@@ -1,0 +1,80 @@
+---
+- name: Ensure epel repo present
+  yum:
+    name: "{{epel_repo_url}}"
+    state: present
+  become: yes
+
+  #- name: install pip
+  #yum:
+  #  name: python-pip
+  #  state: latest
+  # become: yes
+
+- name: Install and upgrade pip
+  pip:
+    name: pip
+    extra_args: --upgrade
+    executable: pip3
+
+- name: Install artifactory using pip3
+  pip:
+    name: artifactory
+    executable: pip3
+
+
+- name: Install dohq-artifactory using pip3
+  pip:
+    name: dohq-artifactory
+    executable: pip3
+
+- name: Install kubernetes using pip3
+  pip:
+    name: kubernetes
+    executable: pip3
+    
+- name: Install configobj using pip3
+  pip:
+    name: configobj 
+    executable: pip3
+    
+
+- name: Install ruamel.yaml using pip3
+  pip:
+    name: ruamel.yaml
+    executable: pip3
+    
+
+- name: Install gitpython using pip3
+  pip:
+    name: gitpython
+    executable: pip3
+    
+- name: Install python_terraform using pip3
+  pip:
+    name: python_terraform
+    executable: pip3
+    
+   
+- name: Install boto3 using pip3
+  pip:
+    name: boto3
+    executable: pip3
+    
+- name: Install dictdiffer using pip3
+  pip:
+    name: dictdiffer 
+    executable: pip3
+
+- name: Install pyyaml using pip3
+  pip:
+    name: pyyaml 
+    executable: pip3
+    
+- name: Install xlrd==1.2.0 using pip3
+  pip:
+    name: xlrd==1.2.0 
+    executable: pip3
+    
+    
+    

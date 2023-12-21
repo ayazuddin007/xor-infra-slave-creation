@@ -1,0 +1,11 @@
+---
+# - name: Install git2consul via npm packages
+#   shell: "npm install -g git2consul"
+#   become: true
+
+- name: Install git2consul via npm packages
+  npm: 
+    name: git2consul
+    state: present
+    global: yes
+  become: yes   

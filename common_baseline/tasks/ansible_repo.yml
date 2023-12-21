@@ -1,0 +1,28 @@
+---
+#- name: install jq
+# yum:
+#   name: "{{ item }}"
+#   state: present
+# with_items:
+#   - jq
+# become: yes
+
+- name: Read the github password from secret-manager
+  shell: aws secretsmanager get-secret-value --region {{ aws_region }} --secret-id master_key | jq --raw-output '.SecretString' | jq -r '."github_password"'
+  register: result
+  
+- name: Create artifact_ansible_script directory
+  file:
+    path: "{{ dest_dir }}"
+    state: directory
+
+- name: clone the repo from git
+  git:
+    repo: 'https://{{ username }}:{{ result.stdout }}@github.com/Shubham-Xor/{{ github_repo }}.git'
+    dest: "{{ dest_dir }}"
+    version: "{{ branch_name }}"
+
+- name: remove visibility of credentials
+  command:
+    cmd: "git remote set-url origin https://github.com/Shubham-Xor/{{ github_repo }}.git"
+    chdir: "{{ dest_dir }}"

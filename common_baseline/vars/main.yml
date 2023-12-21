@@ -1,0 +1,27 @@
+
+gpg_key: https://pkg.jenkins.io/redhat-stable/jenkins.io.key
+jenkins_repo_url: https://pkg.jenkins.io/redhat-stable/jenkins.repo
+epel_repo_url: https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
+kubectx_url: https://raw.githubusercontent.com/ahmetb/kubectx/master/kubectx
+kubectl_url: https://dl.k8s.io/release/v{{kubectl_version}}/bin/linux/amd64/kubectl
+eksctl_url: https://github.com/weaveworks/eksctl/releases/latest/download/eksctl_Linux_amd64.tar.gz
+kubens_url: https://raw.githubusercontent.com/ahmetb/kubectx/master/kubens
+maven_redis_filename: 'apache-maven-{{ maven_version }}-bin.tar.gz'
+terraform_pkg_url: "https://releases.hashicorp.com/terraform/{{ terraform_version_to_install }}/terraform_{{ terraform_version_to_install }}_{{ os_type }}_{{ base_arch[ansible_architecture] | default('amd64') }}.zip"
+terraform_default_path: /usr/local/bin/
+os_type: linux
+authenticator_url: https://api.github.com/repos/kubernetes-sigs/aws-iam-authenticator/releases/latest
+chrome_driver_url: https://chromedriver.storage.googleapis.com/84.0.4147.30/chromedriver_linux64.zip
+google_driver_url: https://dl.google.com/linux/direct/google-chrome-stable_current_x86_64.rpm
+maven_conf_dir: /opt/maven/conf
+JFrog_platform_URL: https://xoriant.jfrog.io
+Jfrog_Artifactory_URL: https://xoriant.jfrog.io/artifactory/  
+Jfrog_Server_ID: jfrog-server
+Jfrog_User: xoriant-jenkins
+username: Shubham-Xor
+github_repo: cicd-ansible-scripts
+dest_dir: /home/ec2-user/artifact_ansible_script/{{ github_repo }}
+branch_name: main
+base_path: ./common_baseline
+remote_path: /home/ec2-user/temp_secret
+jenkin_base_path: /var/lib/jenkins

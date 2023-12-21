@@ -1,0 +1,126 @@
+---
+- name: Update all packages
+  become: true
+  yum:
+    name: '*'
+    state: latest
+    update_cache: yes
+
+- name: Ensure a list of yum packages are installed
+  become: true
+  yum:
+    name: "{{ packages }}"
+    state: latest
+    update_cache: yes
+  vars:
+    packages:
+      - python-pip
+      - yum-utils
+      - amazon-linux-extras
+
+- name: Add extras repository
+  shell: yum-config-manager --enable extras
+  become: true
+
+- name: Install docker via amazon-linux-extras packages
+  shell: "amazon-linux-extras install docker -y"
+  become: true
+
+- name: add user in docker group
+  shell: usermod -aG docker ec2-user
+  become: yes
+  
+- name: Start Docker CE service at startup
+  service:
+    name: docker
+    state: started
+  become: true
+
+- name: Enable Docker CE service at startup
+  service:
+    name: docker
+    enabled: yes
+  become: true    
+
+- name: start Docker deamon at startup
+  shell: dockerd &
+  become: true
+
+- name: Restart Docker CE service
+  service:
+    name: docker
+    state: restarted
+  become: true
+
+
+
+# - name: check whether docker exists
+#   stat:
+#     path: "/usr/bin/docker"
+#   register: result_docker
+
+# - name: output result result_docker
+#   debug:
+#     var: result_docker
+
+# - name: checking version of installed docker
+#   command: "docker --version"
+#   changed_when: false
+#   when: result_docker.stat.exists==true
+#   check_mode: no
+#   register: version_docker
+
+# - name: output version version_awscli
+#   debug:
+#     var: version_docker
+
+# - name: removing docker when target and current version does not match
+#   file:
+#     path: "/usr/bin/docker"
+#     state: absent
+#   with_items: "/usr/bin/docker"
+#   when: result_docker.stat.exists==true and docker_Version | string not in version_docker.stdout
+#   become: yes
+
+# - name: get docker tar file 
+#   get_url:
+#     url: "https://download.docker.com/linux/static/stable/x86_64/docker-{{ docker_Version }}.tgz"
+#     dest: /usr/local/bin
+#     remote_src: yes
+#   when: result_docker.stat.exists==false or docker_Version | string not in version_docker.stdout
+#   become: yes
+
+# - name: Extract docker into usr/local/bin
+#   ansible.builtin.unarchive:
+#     src: /usr/local/bin/docker-{{ docker_Version }}.tgz
+#     dest: /usr/local/bin
+#     remote_src: yes
+#   when: result_docker.stat.exists==false or docker_Version | string not in version_docker.stdout
+#   become: yes
+   
+# - name: Move Docker to /usr/bin
+#   shell: cp /usr/local/bin/docker/* /usr/bin/
+#   become: yes
+#   when: result_docker.stat.exists==false or docker_Version | string not in version_docker.stdout
+
+# - name: add user in docker group
+#   shell: usermod -aG docker ec2-user
+#   become: yes
+
+# - name: Enable Docker CE service at startup
+#   service:
+#     name: docker
+#     state: started
+#     enabled: yes
+#   become: true
+
+# - name: start Docker deamon at startup
+#   shell: dockerd &
+#   become: true
+
+# - name: Restart Docker CE service
+#   service:
+#     name: docker
+#     state: restarted
+#   become: true
+

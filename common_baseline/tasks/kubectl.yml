@@ -1,0 +1,40 @@
+---
+- name: check whether kubectl
+  stat:
+    path: "/usr/local/bin/kubectl"
+  register: result_kubectl
+ 
+- name: output result result_kubectl
+  debug:
+    var: result_kubectl
+
+- name: checking version of installed kubectl
+  command: "/usr/local/bin/kubectl version --client"
+  changed_when: false
+  when: result_kubectl.stat.exists==true
+  check_mode: no
+  register: version_kubectl
+  
+- name: output version version_kubectl
+  debug:
+    var: version_kubectl
+
+- name: removing kubectl when target and current version does not match
+  file:
+    path: "/usr/local/bin/kubectl"
+    state: absent
+  with_items: "/usr/local/bin/kubectl"
+  when:
+  - result_kubectl.stat.exists==true and Version | string not in version_kubectl.stdout
+  become: yes
+
+- name: install kubectl
+  get_url:
+    url: "https://dl.k8s.io/release/v{{ Version }}/bin/linux/amd64/kubectl"
+    dest: /usr/local/bin/kubectl
+    mode: 111
+  when:
+  - result_kubectl.stat.exists==False or Version | string not in version_kubectl.stdout
+  become: yes
+  
+  

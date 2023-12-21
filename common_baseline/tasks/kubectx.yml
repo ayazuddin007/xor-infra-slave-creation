@@ -1,0 +1,7 @@
+---
+- name: install kubectx    
+  get_url:      
+    url: "{{kubectx_url}}"         
+    dest: /usr/local/bin
+    mode: 111 
+  become: yes

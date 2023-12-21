@@ -1,0 +1,52 @@
+<slave>
+  <name>{{ NODE_NAME }}</name>
+  <description>Linux Slave</description>
+  <remoteFS>{{ NODE_SLAVE_HOME }}</remoteFS>
+  <numExecutors>{{ EXECUTORS }}</numExecutors>
+  <mode>NORMAL</mode>
+  <retentionStrategy class="hudson.slaves.RetentionStrategy\$Always"/>
+  <launcher class="hudson.plugins.sshslaves.SSHLauncher">
+    <host>{{ SLAVE_IP }}</host>
+    <port>{{ SSH_PORT }}</port>
+    <credentialsId>{{ CRED_ID }}</credentialsId>
+    <launchTimeoutSeconds>60</launchTimeoutSeconds>
+    <maxNumRetries>10</maxNumRetries>
+    <retryWaitTime>15</retryWaitTime>
+    <sshHostKeyVerificationStrategy class="hudson.plugins.sshslaves.verifiers.KnownHostsFileKeyVerificationStrategy"/>
+    <tcpNoDelay>true</tcpNoDelay>
+  </launcher>
+  <label>{{ LABELS }}</label>
+  <userId>{{ USERID }}</userId>
+  <nodeProperties>
+    <hudson.tools.ToolLocationNodeProperty>
+      <locations>
+        <hudson.tools.ToolLocationNodeProperty_-ToolLocation>
+          <type>hudson.model.JDK$DescriptorImpl</type>
+          <name>jdk8</name>
+          <home>/usr/lib/jvm/java-1.8.0-amazon-corretto.x86_64/</home>
+        </hudson.tools.ToolLocationNodeProperty_-ToolLocation>
+        <hudson.tools.ToolLocationNodeProperty_-ToolLocation>
+          <type>hudson.model.JDK$DescriptorImpl</type>
+          <name>jdk11</name>
+          <home>/usr/lib/jvm/java-11-amazon-corretto.x86_64/</home>
+        </hudson.tools.ToolLocationNodeProperty_-ToolLocation>
+        <hudson.tools.ToolLocationNodeProperty_-ToolLocation>
+          <type>hudson.tasks.Maven$MavenInstallation$DescriptorImpl</type>
+          <name>M2_HOME</name>
+          <home>/opt/maven</home>
+        </hudson.tools.ToolLocationNodeProperty_-ToolLocation>
+        <hudson.tools.ToolLocationNodeProperty_-ToolLocation>
+          <type>hudson.plugins.sonar.SonarRunnerInstallation$DescriptorImpl</type>
+          <name>sonar-scanner</name>
+          <home>/opt/sonar-scanner/</home>
+        </hudson.tools.ToolLocationNodeProperty_-ToolLocation>
+        <hudson.tools.ToolLocationNodeProperty_-ToolLocation>
+	        <type>ru.yandex.qatools.allure.jenkins.tools.AllureCommandlineInstallation$DescriptorImpl</type>
+	        <name>ALLURE_HOME</name>
+	        <home>/opt/allure</home>
+        </hudson.tools.ToolLocationNodeProperty_-ToolLocation>
+      </locations>
+    </hudson.tools.ToolLocationNodeProperty>
+  </nodeProperties>
+
+</slave>

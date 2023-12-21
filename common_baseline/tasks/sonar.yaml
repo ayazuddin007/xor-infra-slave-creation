@@ -1,0 +1,14 @@
+- name: download and unzip sonarqube
+  unarchive:
+    src: https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.7.0.2747-linux.zip
+    dest: /opt
+    remote_src: yes
+  become: yes
+
+- name: rename sonar
+  command: mv '/opt/sonar-scanner-4.7.0.2747-linux' '/opt/sonar-scanner'
+  become: yes
+
+- name: adding entry in sonar-scanner.properties file
+  shell: "echo sonar.host.url=http://10.97.40.16:9000 > /opt/sonar-scanner/conf/sonar-scanner.properties"
+  become: yes

@@ -1,0 +1,7 @@
+---
+- name: restart Jenkins
+  systemd:
+    name: jenkins
+    state: restarted
+  listen: "restart jenkins"
+  become: yes

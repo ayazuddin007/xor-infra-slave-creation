@@ -1,0 +1,142 @@
+---
+# tasks file for common baseline configuration
+
+- name: install base packages
+  package:
+    name: "{{item}}"
+    state: present
+    update_cache: true
+  with_items: "{{ base_packages }}"
+  become: yes
+  tags:
+    - base-packages-install
+
+# task to add secret in secret_manager 
+# - name: add secrets in secret manager
+#   include: secret_manager.yaml
+
+# task for aws_cli install
+- name: Install aws_cli
+  include: aws_cli.yml
+  when: install_awscli == true
+  tags:
+    - awscli-install
+    - awscli-upgrade
+
+#  task for jdk install
+- name: Install jdk
+  include: jdk.yml
+  when: install_jdk == true
+ 
+#  task for aws-authenticator install
+- name: Install aws-authenticator
+  include: aws_authenticator.yml  
+  when: install_aws_authenticator == true
+
+# task for kubectx installation
+- name: Install kubectx
+  include: kubectx.yml
+  when: install_kubectx == true
+
+# task for kubens installation
+- name: Install kubens
+  include: kubens.yml
+  when: install_kubens == true
+
+# task for ansible installation
+- name: Install ansible
+  include: ansible.yml
+  when: install_ansible == true
+
+- name: Install allure
+  include: Allure.yml
+
+# task for maven installation
+- name: Install maven
+  include: maven.yml
+  when: install_maven == true
+
+ # task for docker installation
+- name: Install docker
+  include: docker.yml
+  when: install_docker == true
+
+# task for terraform installation
+- name: Install terraform
+  include: terraform.yml
+  when: install_terraform == true
+  # task for helm installation
+- name: Install helm
+  include: helm.yml
+  when: install_helm == true
+  
+# task for kubectl installation
+- name: Install kubectl
+  include: kubectl.yml
+  when: install_kubectl == true
+
+#  task for eksctl installation
+- name: Install eksctl
+  include: eksctl.yml
+  when: install_eksctl == true
+
+# task for npm installation
+- name: Install npm
+  include: npm.yml
+  when: install_npm == true
+
+# task for jfrog-cli installation
+- name: Install jfrog-cli
+  include: jfrog-cli.yml
+  when: install_jfrog_cli == true
+
+# task for chrome_driver installation
+- name: Install chrome_driver
+  include: chrome_driver.yml
+  when: install_chrome_driver == true
+
+#  task for google_driver installation
+- name: Install google_driver
+  include: google_driver.yml
+  when: install_google_driver == true
+
+# task for git2consul installation
+- name: Install git2consul
+  include: git2consul.yml
+  when: install_git2consul == true
+
+#task for setting timezone
+# - name: setup time zone
+#   include: timezone_setup.yml
+#   tags:
+#     - timezone-setup
+
+# task for jenkins install
+# - name: Install jenkins
+#   include: jenkins_rpm.yml
+#   when: install_jenkins == true
+
+ #task for jenkins mount 
+# - name: mount jenkins
+#   include: efs_mount_jenkins.yml
+
+# task for jenkins_slave
+- name: Jenkins_Slave
+  include: slave.yml
+
+  # task for artifactory installation
+- name: Install artifactory
+  include: artifactory.yml
+  
+    #task for maven settings file
+- name: add settings and settings-with-npm file
+  include: maven_settings.yml
+  
+    # task for clone the repo
+- name: clone the github repo
+  include: ansible_repo.yml
+
+- name: add sonarqube
+  include: sonar.yaml
+
+

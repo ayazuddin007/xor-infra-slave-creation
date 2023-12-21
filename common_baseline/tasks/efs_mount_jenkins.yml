@@ -1,0 +1,41 @@
+---
+- name: Stop jenkins service, if running
+  systemd:
+    name: jenkins
+    state: stopped
+  become: true
+
+- name: Create directory for mounting efs
+  file:
+    path: /mnt/efs_mount
+    state: directory
+  become: yes
+
+- name: Mount the efs 
+  shell: mount -t nfs4 -o nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport {{file_system_id}}.efs.{{aws_region}}.amazonaws.com:/ /mnt/efs_mount/
+  become: yes
+
+- name: Create directory for mounting efs
+  file:
+    path: /mnt/efs_mount/jenkins/
+    state: directory
+    owner: jenkins
+    group: jenkins
+  become: yes
+
+- name: copy all the content from original Jenkins home to this directory
+  shell: sudo  cp -rvfp /var/lib/jenkins/* /mnt/efs_mount/jenkins/
+
+- name: setting up user for jenkins home directory
+  lineinfile:
+    path: /etc/sysconfig/jenkins
+    regexp: '^JENKINS_HOME='
+    line: 'JENKINS_HOME="/mnt/efs_mount/jenkins/"'
+  become: yes
+
+  notify: "restart jenkins"
+
+  
+
+
+

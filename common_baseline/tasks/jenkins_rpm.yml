@@ -1,0 +1,53 @@
+---
+- name: update all packages
+  become: true
+  yum:
+    name: '*'
+    state: latest
+    update_cache: yes
+    
+- name: Add the Jenkins repo
+  get_url:
+    url: "{{ jenkins_repo_url }}"
+    dest: /etc/yum.repos.d/jenkins.repo
+  become: yes
+
+- name: Import a key file from Jenkins
+  rpm_key:
+     state: present
+     key: "{{ gpg_key }}"
+  become: yes   
+
+- name: Ensure epel repo present
+  yum:
+    name: "{{epel_repo_url}}"
+    state: present
+  become: yes
+
+- name: Install Jenkins
+  yum: 
+    name: jenkins
+    state: present
+  become: yes  
+
+- name: Start Jenkins service
+  systemd:
+     name: jenkins
+     state: started
+     enabled: true
+  become: yes   
+
+- name: sleep for 30 seconds
+  wait_for:
+     timeout: 30
+
+- name: Init password Jenkins
+  become: yes
+  become_method: sudo
+  command: cat /var/lib/jenkins/secrets/initialAdminPassword
+  changed_when: false
+  register: result
+
+- name: Print init password Jenkins
+  debug:
+    var: result.stdout

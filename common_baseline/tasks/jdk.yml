@@ -1,0 +1,32 @@
+---  
+- name: update all packages
+  become: true
+  yum:
+    name: '*'
+    state: latest
+    update_cache: yes
+
+- name: Add extras repository
+  shell: yum-config-manager --enable extras
+  become: true
+
+- name: enable jdk8 corretto 
+  shell: amazon-linux-extras enable corretto8
+  become: true
+
+- name: install openjdk
+  yum:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - java-1.8.0-amazon-corretto-devel
+  become: yes  
+
+- name: install JDK11
+  # shell: amazon-linux-extras install -y java-openjdk11
+  yum:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - java-11-amazon-corretto
+  become: yes

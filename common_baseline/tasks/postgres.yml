@@ -1,0 +1,4 @@
+---
+- name: Intstall Postgres
+  shell: amazon-linux-extras install postgresql10 -y
+  become: true

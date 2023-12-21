@@ -1,0 +1,13 @@
+
+
+- name: download and unzip allure
+  unarchive:
+    src: https://repo.maven.apache.org/maven2/io/qameta/allure/allure-commandline/2.13.9/allure-commandline-2.13.9.zip
+    dest: /opt
+    remote_src: yes
+  become: yes
+
+- name: rename allure
+  command: mv '/opt/allure-2.13.9' '/opt/allure'
+  become: yes
+

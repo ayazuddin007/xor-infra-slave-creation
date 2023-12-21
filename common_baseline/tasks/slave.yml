@@ -1,0 +1,49 @@
+---
+- name: line insert
+  lineinfile:
+    path: ~/.ssh/authorized_keys
+    # for master jenkins
+    line: 'ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDTzIC7s7HRb9tr+gUPgcbcfkHpl7fBaUpbJK2iKfyiOKhlkK/bhCQtRG1VJr1bwr3AJey+wWwZ2TNdxxfpZA7sh+kAZEQGBgjyR6RZ5GpqLDU1xcgO/agfuFdF8jWvXad5yz6an1GxrlN8VoPu8eK+csx92ntzxBgArAC8yhrG0UU7P+f9kSkxWQ1lBnaW3Za4kFs12lcP2zDJh6iIIZk5Dp8SoMUwhCdNVsDeeKh68Y+Dy9+Fyzaz1tjD2AKKVHNX3pT7BxQYVVH+v6LufjMlR+2hL8U69QmIT54xli6qQu2j8DVfCBqyDKVIYuvEDbaInIBP2Sm5nMY0ifqR/xq1 ec2-user@ip-10-97-40-54.ec2.internal'
+    insertbefore: EOF
+
+- name: Execute the script
+  command: sh ./common_baseline/files/check_ssh_dir.sh
+  delegate_to: localhost
+
+- name: delete directory if exist
+  shell: rm -rf "{{ JENKINS_SLAVE_PATH }}"
+  become: true
+  delegate_to: localhost
+  ignore_errors: yes
+  
+- name: Create directory if they don't exist
+  file:
+    path: "{{ JENKINS_SLAVE_PATH }}"
+    state: directory
+  delegate_to: localhost
+  
+- name: Template a file to /slave/
+  template:
+    src: ./common_baseline/templates/node.xml
+    dest: "{{ JENKINS_SLAVE_PATH }}"
+  delegate_to: localhost
+
+- name: Check jenkins-cli in slave directory
+  stat:
+    path: "{{ JENKINS_SLAVE_PATH }}jenkins-cli.jar"
+  register: jenkins_cli_dir
+  delegate_to: localhost
+  
+- name: Download jenkins_cli
+  shell: wget -P {{ JENKINS_SLAVE_PATH }} {{JENKINS_URL}}/jnlpJars/jenkins-cli.jar 
+  when: not jenkins_cli_dir.stat.exists
+  delegate_to: localhost
+  
+- name: Change permissions of slave dir
+  shell: chown -R jenkins:jenkins {{ JENKINS_SLAVE_PATH }}
+  delegate_to: localhost
+   
+- name: create node
+  shell:
+    cmd: "cat {{ JENKINS_SLAVE_PATH }}node.xml | java -jar {{ JENKINS_SLAVE_PATH }}jenkins-cli.jar -s {{JENKINS_URL}} -auth {{ JENKINS_USERNAME }}:{{ JENKINS_PASSWORD }} create-node {{ NODE_NAME }}"
+  delegate_to: localhost 

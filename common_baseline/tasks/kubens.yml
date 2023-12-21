@@ -1,0 +1,7 @@
+---
+- name: install kubens
+  get_url:
+    url: "{{kubens_url}}" 
+    dest: /usr/local/bin
+    mode: 111
+  become: yes

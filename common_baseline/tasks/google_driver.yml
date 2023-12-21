@@ -1,0 +1,12 @@
+--- 
+- name: Install google_driver
+  yum: 
+    name: "{{ google_driver_url }}"
+    state: present
+  become: yes 
+  
+# - name: Remove google-chrome-stable-84.0.4147.135-1.x86_64.rpm
+#   file:
+#     path: /tmp/google-chrome-stable-84.0.4147.135-1.x86_64.rpm
+#     state: absent
+#   become: yes

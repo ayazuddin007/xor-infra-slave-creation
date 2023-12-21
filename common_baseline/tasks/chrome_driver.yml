@@ -1,0 +1,19 @@
+---
+- name: Download chrome_driver
+  get_url:
+    url: "{{ chrome_driver_url }}"
+    dest: /usr/bin/
+  become: yes
+
+- name: Extract chrome_driver into /usr/bin
+  unarchive:
+    src: /usr/bin/chromedriver_linux64.zip
+    dest: /usr/bin/
+    remote_src: yes  
+  become: yes
+  
+- name: Remove chromedriver_linux64.zip
+  file:
+    path: /usr/bin/chromedriver_linux64.zip
+    state: absent
+  become: yes

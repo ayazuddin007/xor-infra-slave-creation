@@ -1,0 +1,134 @@
+---
+- name: load version vars
+  with_first_found:
+    - '../vars/versions/{{ maven_version }}.yml'
+  include_vars: '{{ item }}'
+
+- name: assert version vars
+  assert:
+    that:
+      - "maven_redis_sha256sum not in (None, '')"
+
+- name: install which (yum, dnf, zypper)
+  become: yes
+  package:
+    name: which
+    state: present
+  when: ansible_pkg_mgr in ('yum', 'dnf', 'zypper')
+
+- name: create download directory
+  file:
+    state: directory
+    mode: 'u=rwx,go=rx'
+    dest: '{{ maven_download_dir }}'
+
+- name: download Maven
+  get_url:
+    url: '{{ maven_mirror }}/{{ maven_redis_filename }}'
+    dest: '{{ maven_download_dir }}/{{ maven_redis_filename }}'
+    checksum: 'sha256:{{ maven_redis_sha256sum }}'
+    force: no
+    use_proxy: '{{ maven_use_proxy }}'
+    validate_certs: '{{ maven_validate_certs }}'
+    timeout: '{{ maven_download_timeout }}'
+    mode: 'u=rw,go=r'
+
+- name: create Maven installation directory
+  become: yes
+  file:
+    state: directory
+    mode: 'u=rwx,go=rx'
+    dest: '{{ maven_install_dir }}'
+
+- name: install unarchive module dependencies (dnf, zypper)
+  become: yes
+  package:
+    name:
+      - tar
+      - unzip
+      - gzip
+    state: present
+  when: ansible_pkg_mgr in ('dnf', 'zypper')
+
+- name: install Maven
+  become: yes
+  unarchive:
+    src: '{{ maven_download_dir }}/{{ maven_redis_filename }}'
+    dest: '{{ maven_install_dir }}'
+    mode: 'go-w'
+    creates: '{{ maven_install_dir }}/apache-maven-{{ maven_version }}'
+    remote_src: yes
+
+- name: rename maven
+  command: mv '{{ maven_install_dir }}/apache-maven-{{ maven_version }}' '{{ maven_install_dir }}/maven'
+  become: yes
+
+- name: comment PATH in bash_profile
+  lineinfile:
+    path: /home/ec2-user/.bash_profile
+    line: "#PATH=$PATH:$HOME/.local/bin:$HOME/bin"
+    regexp: '^PATH='
+
+- name: comment export PATH in bash_profile
+  replace:
+    path: /home/ec2-user/.bash_profile
+    regexp: 'export PATH'
+    replace: '#export PATH'
+
+
+- name: insert maven environment variable in bash_profile
+  lineinfile:
+    path: /home/ec2-user/.bash_profile
+    line: "M2_HOME=/opt/maven\nM2=$M2_HOME/bin\nALLURE_HOME=/opt/allure\n\nPATH=$PATH:$HOME/.local/bin:$HOME/bin:$M2_HOME:$M2:$ALLURE_HOME/bin\n\nexport PATH"
+    #insertbefore: '#PATH'
+    insertafter: EOF
+
+- name: set maven environment variable
+  shell: "source /home/ec2-user/.bash_profile"
+
+- name: create symbolic links
+  include_tasks: create-symbolic-links.yml
+  when: maven_is_default_installation
+
+- name: create Ansible facts.d directory
+  become: yes
+  file:
+    state: directory
+    dest: /etc/ansible/facts.d
+    mode: 'u=rwx,go=rx'
+
+- name: install Maven facts
+  become: yes
+  template:
+    src: facts.j2
+    dest: '/etc/ansible/facts.d/{{ maven_fact_group_name }}.fact'
+    mode: 'u=rw,go=r'
+
+- name: re-read facts
+  setup:
+    filter: ansible_local
+
+- name: install jq
+  yum:
+    name: "{{ item }}"
+    state: present
+  with_items:
+    - jq
+  become: yes 
+
+- name: Read the Jfrog password from secret-manager
+  shell: aws secretsmanager get-secret-value --region eu-central-1 --secret-id jfrog_secrets | jq --raw-output '.SecretString' | jq -r '."jfrog_secrets"'
+  register: result
+
+# - name: configure maven
+#   vars: 
+#     Jfrog_Password: "{{ result.stdout }}"   
+#   become: yes
+#   template:
+#     src: settings.xml.j2
+#     dest: '{{maven_conf_dir}}/settings.xml'
+
+ 
+
+
+

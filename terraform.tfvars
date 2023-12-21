@@ -1,0 +1,16 @@
+
+client_name                            = "xor"
+environment                            = "dev"
+region_name                            = "N.Virginia"
+ec2_ami = "ami-03ededff12e34e59e"   
+vpc_id = "vpc-0ca2a6728d27416c7"
+subnet_id = "subnet-0804dc3fe5d3143db"
+ec2_instance_type = "t2.medium"
+ssh_user = "ec2-user"
+aws_region = "us-east-1"
+
+# NODE_NAME = "slave1"
+# JENKINS_URL = "https://10.97.43.74:8080"
+# JENKINS_SLAVE_PATH = "/home/ec2-user/slave"
+# JENKINS_USERNAME = "ifcs-admin"
+# JENKINS_PASSWORD = "admin@ifcs"

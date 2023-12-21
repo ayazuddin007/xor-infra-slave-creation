@@ -1,0 +1,57 @@
+---
+  - name: check whether eksctl installed 
+    stat:
+      path: "/usr/local/bin/eksctl"
+    register: result_eksctl
+
+  - name: output result result_eksctl
+    debug:
+      var: result_eksctl
+  
+  - name: checking version of installed eksctl
+    command: "eksctl version"
+    changed_when: false
+    when: result_eksctl.stat.exists==true
+    check_mode: no
+    register: version_eksctl
+
+  - name: output version version_eksctl
+    debug:
+      var: version_eksctl
+
+  - name: removing eksctl when target and current version does not match
+    file:
+      path: "/usr/local/bin/eksctl"
+      state: absent
+    with_items: "/usr/local/bin/eksctl"
+    when:
+    - result_eksctl.stat.exists==true and eks_Version | string not in version_eksctl.stdout
+    become: yes
+
+  - name: download eksctl
+    get_url:
+      url: "https://github.com/weaveworks/eksctl/releases/download/{{ eks_Version }}-rc.0/eksctl_Linux_amd64.tar.gz"
+      dest: /usr/local/bin
+      mode: 111
+    when:
+    - result_eksctl.stat.exists==False or eks_Version | string not in version_eksctl.stdout
+    become: yes 
+
+  - name: Extract eksctl into usr/local/bin
+    ansible.builtin.unarchive:
+      src: /usr/local/bin/eksctl_Linux_amd64.tar.gz
+      dest: /usr/local/bin
+      remote_src: yes
+    become: yes
+    when:
+    - result_eksctl.stat.exists==False or eks_Version | string not in version_eksctl.stdout
+   
+
+  - name: Remove eksctl_Linux_amd64.tar.gz
+    file:
+      path: /usr/local/bin/eksctl_Linux_amd64.tar.gz
+      state: absent
+    become: yes
+    when:
+    - result_eksctl.stat.exists==False or eks_Version | string not in version_eksctl.stdout
+   

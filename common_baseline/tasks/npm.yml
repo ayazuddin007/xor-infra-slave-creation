@@ -1,0 +1,42 @@
+---
+- name: download npm
+  shell: 
+    cmd: "curl -sL https://rpm.nodesource.com/setup_12.x | sudo bash -"
+
+- name: Install Node
+  shell: 
+    cmd: "yum install -y nodejs-{{ node_version }}"
+  become: yes
+
+# - name: Download nvm installer
+#   get_url: 
+#     url: "https://raw.githubusercontent.com/creationix/nvm/v{{ nvm_version }}/install.sh"
+#     dest: ~/nvm-installer.sh 
+#     mode: u=rwx,g=r,o=x
+ 
+
+# - name: Execute the nvm-installer.sh
+#   command: ~/nvm-installer.sh 
+#   args:
+#     creates: ~/.nvm/nvm.sh
+  
+
+# - name: Own the nvm script
+#   file:
+#     path: ~/.nvm/nvm.sh
+#     state: touch
+#     mode: u=rwx,g=r,o=rwx
+  
+
+# - name: Activate nvm
+#   command: /bin/bash ~/.nvm/nvm.sh
+#   args:
+#     chdir: "~/"
+  
+# - name: set nvm environment variable
+#   shell: "source /home/ec2-user/.bashrc"
+
+# - name: Install node
+#   command: nvm install "{{ node_version }}"
+#    # nvm use --delete-prefix "v{{ node_version }}" --silent
+ 

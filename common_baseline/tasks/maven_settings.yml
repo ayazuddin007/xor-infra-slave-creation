@@ -1,0 +1,17 @@
+---
+- name: Create .m2 directory
+  file:
+    path: "/home/ec2-user/.m2"
+    state: directory
+ 
+- name: creates setting.xml file in .m2 folder
+  template:
+    src: settings.xml
+    dest: '/home/ec2-user/.m2/settings.xml'
+    mode: 'u=rw,go=r'
+
+# - name: creates settings-with-npm.xml file in .m2 folder
+#   template:
+#     src: settings-with-npm.xml
+#     dest: '/home/ec2-user/.m2/settings-with-npm.xml'
+#     mode: 'u=rw,go=r'

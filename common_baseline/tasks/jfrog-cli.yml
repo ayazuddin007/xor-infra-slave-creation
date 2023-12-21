@@ -1,0 +1,31 @@
+---
+- name: Add the Jfrog-cli repo
+  copy:
+    content: "[jfrog-cli]\nname=jfrog-cli\nbaseurl=https://releases.jfrog.io/artifactory/jfrog-rpms\nenabled=1\ngpgcheck=0\n"
+    dest: /etc/yum.repos.d/jfrog-cli.repo
+  become: yes 
+
+- name: Install jfrog-cli
+  yum: 
+    name: jfrog-cli-v2
+    state: present
+  become: yes
+
+# - name: Add kubernetes secrets
+#   shell: kubectl create secret docker-registry xoriant.jfrog.io --docker-server=xoriant.jfrog.io --docker-username=xoriant-jenkins --docker-password=Admin@123
+
+  #- name: install jq
+  #  yum:
+  #  name: "{{ item }}"
+  #  state: present
+  #with_items:
+  # - jq
+  #become: yes 
+
+- name: Read the Jfrog password from secret-manager
+  shell: aws secretsmanager get-secret-value --region {{ aws_region }} --secret-id git_jfrog_credentials | jq --raw-output '.SecretString' | jq -r '."jfrog_secret"'
+  register: result
+
+- name: add Jfrog Configuration  
+  shell: jfrog config add --user={{ Jfrog_User }} --password={{ result.stdout}} --url={{ JFrog_platform_URL }} --artifactory-url={{ Jfrog_Artifactory_URL }} --interactive=false --enc-password=false {{ Jfrog_Server_ID }}
+ 

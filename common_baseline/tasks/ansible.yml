@@ -1,0 +1,54 @@
+---
+- name: Update all packages
+  become: true
+  yum:
+     name: '*'
+     state: latest
+     update_cache: yes
+
+- name: Add extras repository
+  shell: yum-config-manager --enable extras
+  become: true
+
+- name: Install ansible via amazon-linux-extras packages
+  shell: "amazon-linux-extras install ansible2 -y"
+  become: true
+
+
+# - name: check whether ansible exists
+#   stat:
+#     path: "/usr/bin/ansible"
+#   register: result_ansible
+
+# - name: output result result_ansible
+#   debug:
+#     var: result_ansible
+
+# - name: checking version of installed ansible
+#   command: "ansible --version"
+#   changed_when: false
+#   when: result_ansible.stat.exists==true
+#   check_mode: no
+#   register: version_ansible
+
+# - name: output version version_awscli
+#   debug:
+#     var: version_ansible
+
+# - name: get pip.py
+#   get_url:
+#     url: "https://bootstrap.pypa.io/pip/3.2/get-pip.py"
+#     dest: /usr/local/bin
+#     remote_src: yes
+#   when: result_ansible.stat.exists==false or ansi_version | string not in version_ansible.stdout
+#   become: yes
+  
+# - name: execute install script
+#   command: python /usr/local/bin/get-pip.py
+#     remote_src: yes
+#   when: result_ansible.stat.exists==false or ansi_version | string not in version_ansible.stdout
+  
+# - name: Install ansible
+#   pip:
+#     name: {{ ansi_version }}
+#   when: result_ansible.stat.exists==false or ansi_version | string not in version_ansible.stdout    

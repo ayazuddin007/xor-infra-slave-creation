@@ -1,0 +1,50 @@
+---
+- name: check whether awscli is installed
+  stat:
+    path: "{{ awscli_install_path[0] }}"
+  register: result_awscli
+
+- name: output result result_awscli
+  debug:
+    var: result_awscli
+
+- name: checking version of installed awscli
+  command: "{{ awscli_install_path[0] }} --version"
+  changed_when: false
+  when: result_awscli.stat.exists==true
+  check_mode: no
+  register: version_awscli
+
+- name: output version version_awscli
+  debug:
+    var: version_awscli
+
+- name: removing awscli when target and current version does not match
+  file:
+    path: "{{ item }}"
+    state: absent
+  with_items: "{{ awscli_install_path }}"
+  when:
+    - result_awscli.stat.exists==true and awscli_target_version | string not in version_awscli.stdout
+  become: yes
+
+- name: download and unzip awscli
+  unarchive:
+    src: https://awscli.amazonaws.com/awscli-exe-linux-x86_64-{{ awscli_target_version }}.zip
+    dest: /tmp
+    remote_src: yes
+  when: result_awscli.stat.exists==False or awscli_target_version|string not in version_awscli.stdout
+
+- name: install awscli
+  shell:
+    cmd: ./aws/install -i /usr/local/aws-cli -b /usr/local/bin
+    chdir: /tmp
+  when: result_awscli.stat.exists==False or awscli_target_version|string not in version_awscli.stdout
+  become: yes
+  ignore_errors: "{{ ansible_check_mode }}"
+
+- name: awscli download cleanup
+  file:
+    path: /tmp/aws/
+    state: absent
+  when: result_awscli.stat.exists==False or awscli_target_version|string not in version_awscli.stdout

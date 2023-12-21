@@ -1,0 +1,112 @@
+---
+# vars for base-packages install
+base_packages:
+  - git
+  - curl
+  - htop
+  - tree
+  - unzip
+  - wget
+  - amazon-linux-extras
+  - jq
+  - httpd-tools
+  - libselinux-python
+  
+    # For aws-cli
+install_awscli: true
+awscli_target_version: "2.7.2"
+awscli_install_path:
+  - /usr/local/bin/aws
+  - /usr/local/bin/aws_completer
+  - /usr/local/aws-cli/
+
+# vars for timezone
+# set_timezone: "Etc/UTC"
+
+# For jdk
+install_jdk: true
+
+# For aws_iam_authenticator
+install_aws_authenticator: true
+
+# For Kubectx
+install_kubectx: true
+
+# For kubens
+install_kubens: true
+
+# For Kubectl
+install_kubectl: true
+Version: "1.22.0"  #kubectl version
+
+# For eksctl
+install_eksctl: true
+eks_Version: "0.63.0" #eksctl_version
+
+# For ansible 
+install_ansible: true
+ansi_version: "2.9.23"
+
+# For Docker
+install_docker: true
+docker_Version: "20.10.7"
+
+# For jfrog-cli
+install_jfrog_cli: true
+
+#For terraform 
+install_terraform: true
+terraform_version: latest
+terraform_path: "{{ terraform_default_path }}"
+
+# For helm 
+install_helm: true
+helm_version: 'v3.2.1'
+helm_platform: linux
+helm_arch: amd64
+helm_bin_path: /usr/local/bin/helm
+
+# For Maven
+install_maven: true
+maven_version: '3.6.3'
+#maven_version: '3.8.1'
+# Mirror to download the Maven redistributable package from
+maven_mirror: "http://archive.apache.org/dist/maven/maven-{{ maven_version|regex_replace('\\..*', '') }}/{{ maven_version }}/binaries"
+# Base installation directory the Maven distribution
+# maven_install_dir: /opt/maven
+maven_install_dir: /opt/
+# Directory to store files downloaded for Maven installation
+maven_download_dir: "{{ x_ansible_download_dir | default(ansible_env.HOME + '/.ansible/tmp/downloads') }}"
+# The number of seconds to wait before the Maven download times-out
+maven_download_timeout: 10
+# Whether to use the proxy when downloading Maven (if the proxy environment variable is present)
+maven_use_proxy: yes
+# Whether to validate HTTPS certificates when downloading Maven
+maven_validate_certs: yes
+maven_is_default_installation: yes
+
+# Name of the group of Ansible facts relating this Maven installation.
+#
+# Override if you want use this role more than once to install multiple versions
+# of Maven.
+#
+# e.g. maven_fact_group_name: maven_3_3
+# would change the Maven home fact to:
+# ansible_local.maven_3_2.general.home
+maven_fact_group_name: maven
+
+# For chrome_driver
+install_chrome_driver: true
+
+# For google_driver
+install_google_driver: true
+
+# For NPM
+install_npm: true
+node_version: 12.19.1
+
+#For git2consul
+install_git2consul: true
+
+# For jenkins
+install_jenkins: false
